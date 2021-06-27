@@ -84,9 +84,13 @@ class WeatherForecast:
             else:
                 return "It will be clear."
 
-    def __iter__(self):
+    def items(self):  # returns tuple
         for date, weather in self.forecast_dict.items():
-            yield {date: weather}
+            yield date, weather
+
+    def __iter__(self):
+        pass
+        # return self.forecast_dict
 
     def __next__(self):
         pass  # wf - iterator zwracający wszystkie daty, dla których znana jest pogoda. (czyli czyta z pliku)
@@ -105,12 +109,12 @@ class WeatherForecast:
 #     if my_weather.rain == 0 and int(my_weather.snow) == 0:
 #         print("It will be clear.")
 
-print("And now testing the next task, magical methods.\n")
+print("And now testing the next task, magical methods.")
 my_weather_forecast = WeatherForecast(sys.argv[1])
-print("getitem:\n")
+print("getitem:")
 print(my_weather_forecast[sys.argv[2]])
 
-print("iter:\n")
+print("iter:")
 # print(my_weather_forecast.forecast_dict)
 print(my_weather_forecast.items())
 
