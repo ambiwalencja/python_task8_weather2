@@ -2,9 +2,6 @@ import sys
 import requests  # https://docs.python-requests.org/en/master/
 import datetime
 
-# 57836734f5964a9a970213219211406
-
-
 class FileMixin:  # pomocnicze klasy się tak nazywają - z dopiskiem "mixin"
     def read_from_file(self):
         with open("forecast.txt", "r") as file:
@@ -71,10 +68,10 @@ class WeatherForecast:
                 else:
                     self.forecast_dict[current_line[0]] = "It will be clear."
 
-    def __getitem__(self, date):  # wf[date] => odpowiedź dla podanej daty (getitem)
+    def __getitem__(self, date):  # answer for given date
         if date in self.forecast_dict.keys():  # jeśli jest w słowniku, to bierzemy pogodę stamtąd
             return self.forecast_dict[date]
-        else:  # inaczej pobierz dane z API
+        else:  # otherwise get data from API
             self.weather.get_data()
             if self.weather.rain == 1 and self.weather.snow == 1:
                 return "It will rain and snow."
@@ -89,7 +86,7 @@ class WeatherForecast:
         for date, weather in self.forecast_dict.items():
             yield date, weather
 
-    def __iter__(self):  # iterator zwracający wszystkie daty, dla których znana jest pogoda.
+    def __iter__(self):  # iterator returning all dates with known forecast
         return self
 
     def __next__(self):
@@ -107,7 +104,7 @@ print("getitem:")
 print(my_weather_forecast[sys.argv[2]])
 
 print("items:")
-for date, forecast in my_weather_forecast.items():  # we iterate in
+for date, forecast in my_weather_forecast.items():  # we iterate over tuple generator
     print (date, forecast)
 
 print("iterator:")
