@@ -54,6 +54,7 @@ class WeatherForecast:
         self.forecast_dict = {}  # dictionary: key - date, value - forecast
         self.read_forecast_from_file()
         self.weather = Weather("http://api.weatherapi.com/v1/forecast.json", "Warsaw", 10)
+        self.counter = 0
 
     def read_forecast_from_file(self):
         with open("forecast.txt", "r") as file:
@@ -84,37 +85,33 @@ class WeatherForecast:
             else:
                 return "It will be clear."
 
-    def items(self):  # returns tuple
+    def items(self):  # returns tuple generator
         for date, weather in self.forecast_dict.items():
             yield date, weather
 
-    def __iter__(self):
-        pass
-        # return self.forecast_dict
+    def __iter__(self):  # iterator zwracający wszystkie daty, dla których znana jest pogoda.
+        return self
 
     def __next__(self):
-        pass  # wf - iterator zwracający wszystkie daty, dla których znana jest pogoda. (czyli czyta z pliku)
+        self.counter += 1
+        list_of_keys = list(self.forecast_dict.keys())
+        if self.counter > len(list_of_keys):
+            raise StopIteration
+        return list_of_keys[self.counter - 1]
 
 
-# my_weather = Weather("http://api.weatherapi.com/v1/forecast.json", "Warsaw", 10)
-# if not my_weather.check_date():
-#     print("Couldn't load data. Please select date between today and 10 days forward.")
-# else:
-#     if not my_weather.read_from_file():  # if info is not in file
-#         my_weather.get_data()  # get data from api
-#     if my_weather.rain == 1:
-#         print("It will rain.")
-#     if my_weather.snow == 1:
-#         print("It will snow.")
-#     if my_weather.rain == 0 and int(my_weather.snow) == 0:
-#         print("It will be clear.")
-
-print("And now testing the next task, magical methods.")
+print("Magical methods, iterators:")
 my_weather_forecast = WeatherForecast(sys.argv[1])
+
 print("getitem:")
 print(my_weather_forecast[sys.argv[2]])
 
-print("iter:")
-# print(my_weather_forecast.forecast_dict)
-print(my_weather_forecast.items())
+print("items:")
+for date, forecast in my_weather_forecast.items():  # we iterate in
+    print (date, forecast)
+
+print("iterator:")
+for date in my_weather_forecast:
+    print(date)
+
 
