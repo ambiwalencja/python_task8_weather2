@@ -51,7 +51,7 @@ class WeatherForecast:
         with open("forecast.txt", "r") as file:
             for line in file.readlines():
                 current_line = line.split(',')
-                current_date = current_line[0]  # i can omit this line but i prefer to keep it for now
+                current_date = datetime.datetime.strptime(current_line[0], "%Y-%m-%d").date()
                 self.forecast_dict[current_date] = OneDayWeather()
                 self.forecast_dict[current_date].rain = int(current_line[1])
                 self.forecast_dict[current_date].snow = int(current_line[2].split("\n")[0])
@@ -79,7 +79,7 @@ class WeatherForecast:
         self.read_forecast_from_file()
         # print(f'get forecast for date 0: dict {self.forecast_dict}, and current date: {self.date}')
         # THE PROBLEM IS HERE - I COMPARE DATE TO STRING!!!!
-        if self.date.strftime("%Y-%m-%d") in self.forecast_dict.keys():  # if date is already in file, take it
+        if self.date in self.forecast_dict.keys():  # if date is already in file, take it
             print(f'get forecast for date 1: read from dict {self.forecast_dict[self.date].rain}')
             self.current_weather.rain = self.forecast_dict[self.date].rain
             self.current_weather.snow = self.forecast_dict[self.date].snow
