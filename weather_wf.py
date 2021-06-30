@@ -3,9 +3,6 @@ import requests  # https://docs.python-requests.org/en/master/
 import datetime
 from pprint import pprint
 
-# "http://api.weatherapi.com/v1/forecast.json", "Warsaw", 10)
-# 57836734f5964a9a970213219211406
-
 
 class OneDayWeather:
     def __init__(self):
@@ -37,8 +34,8 @@ class WeatherForecast:
     def set_date(self):
         # if sys.argv[2] == None
         if len(sys.argv) < 3:
-            # print(f'set date: {datetime.datetime.today().date()}')
-            return datetime.datetime.today().date()  # tutaj powinno być jutro z wykorzystaniem timedelta pewnie
+            print(f'set date: {datetime.datetime.today().date() + datetime.timedelta(days=1)}')
+            return datetime.datetime.today().date() + datetime.timedelta(days=1)
         # print(f'set date 2: {datetime.datetime.strptime(sys.argv[2], "%Y-%m-%d").date()}')
         return datetime.datetime.strptime(sys.argv[2], "%Y-%m-%d").date()
 
@@ -66,7 +63,7 @@ class WeatherForecast:
         # pprint(response.json())
         # obsługa błędu!!! zawsze jak działam z API to muszę to obsłużyć,
         # bo to jest korzystanie z zewnętrznej usługi i nie mam wpływu na to, czy ktoś tego nie zmieni
-        # sprawdzić,
+        # sprawdzić, czy struktura się zgadza, poszczególne klucze istnieją itp
         # .get() - pierwszy parametr - to klucz, a drugi parametr - wartość jeśli klucza nie ma
         # przechwycić wyjątek i dodać do loga (tabela w bazie danych log z treścią błędu)
         # albo plik z błędami związanymi z API
@@ -78,45 +75,34 @@ class WeatherForecast:
     def get_forecast_for_date(self):
         self.read_forecast_from_file()
         # print(f'get forecast for date 0: dict {self.forecast_dict}, and current date: {self.date}')
-        # THE PROBLEM IS HERE - I COMPARE DATE TO STRING!!!!
         if self.date in self.forecast_dict.keys():  # if date is already in file, take it
-            print(f'get forecast for date 1: read from dict {self.forecast_dict[self.date].rain}')
+            # print(f'get forecast for date 1: read from dict {self.forecast_dict[self.date].rain}')
             self.current_weather.rain = self.forecast_dict[self.date].rain
             self.current_weather.snow = self.forecast_dict[self.date].snow
 
         else:
-            print(f'get forecast for date 2: get file {self.current_weather.rain}')
+            # print(f'get forecast for date 2: get from API {self.current_weather.rain}')
             self.get_data()  # if not, get data from API
             self.write_to_file(self.current_weather)  # and add recent forecast to file
         return self.current_weather.output_message()
 
-    # def __getitem__(self, date):  # answer for given date
-    #     if date in self.forecast_dict.keys():  # jeśli jest w słowniku, to bierzemy pogodę stamtąd
-    #         return self.forecast_dict[date]
-    #     else:  # otherwise get data from API
-    #         self.weather.get_data()
-    #         if self.weather.rain == 1 and self.weather.snow == 1:
-    #             return "It will rain and snow."
-    #         elif self.weather.rain == 1 and self.weather.snow == 0:
-    #             return "It will rain."
-    #         elif self.weather.rain == 0 and self.weather.snow == 1:
-    #             return "It will snow."
-    #         else:
-    #             return "It will be clear."
-    #
-    # def items(self):  # returns tuple generator
-    #     for date, weather in self.forecast_dict.items():
-    #         yield date, weather
-    #
-    # def __iter__(self):  # iterator returning all dates with known forecast
-    #     return self
-    #
-    # def __next__(self):
-    #     self.counter += 1
-    #     list_of_keys = list(self.forecast_dict.keys())
-    #     if self.counter > len(list_of_keys):
-    #         raise StopIteration
-    #     return list_of_keys[self.counter - 1]
+    def __getitem__(self, date):  # answer for given date
+        self.date = datetime.datetime.strptime(date, "%Y-%m-%d").date()
+        return self.get_forecast_for_date()
+
+    def items(self):  # returns tuple generator
+        for date, weather in self.forecast_dict.items():
+            yield date, weather.output_message()
+
+    def __iter__(self):  # iterator returning all dates with known forecast
+        return self
+
+    def __next__(self):
+        self.counter += 1
+        list_of_keys = list(self.forecast_dict.keys())
+        if self.counter > len(list_of_keys):
+            raise StopIteration
+        return list_of_keys[self.counter - 1]
 
 
 # -------------------------------------------------------------------------------------------------------------
@@ -128,18 +114,16 @@ else:
     print(my_weather_forecast.get_forecast_for_date())
 
 # -------------------------------------------------------------------------------------------------------------
-# print("Magical methods, iterators:")
-#
-#
-# print("getitem:")
-# print(my_weather_forecast[sys.argv[2]])
-#
-# print("items:")
-# for date, forecast in my_weather_forecast.items():  # we iterate over tuple generator
-#     print (date, forecast)
-#
-# print("iterator:")
-# for date in my_weather_forecast:
-#     print(date)
+print("Magical methods, iterators:")
+print("getitem:")
+print(my_weather_forecast["2021-07-07"])
+
+print("items:")
+for date, forecast in my_weather_forecast.items():  # we iterate over tuple generator
+    print (date, forecast)
+
+print("iterator:")
+for date in my_weather_forecast:
+    print(date)
 
 
