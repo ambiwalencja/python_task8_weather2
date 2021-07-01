@@ -34,7 +34,7 @@ class WeatherForecast:
     def set_date(self):
         # if sys.argv[2] == None
         if len(sys.argv) < 3:
-            print(f'set date: {datetime.datetime.today().date() + datetime.timedelta(days=1)}')
+            # print(f'set date: {datetime.datetime.today().date() + datetime.timedelta(days=1)}')
             return datetime.datetime.today().date() + datetime.timedelta(days=1)
         # print(f'set date 2: {datetime.datetime.strptime(sys.argv[2], "%Y-%m-%d").date()}')
         return datetime.datetime.strptime(sys.argv[2], "%Y-%m-%d").date()
